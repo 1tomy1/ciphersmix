@@ -22,6 +22,15 @@
     textarea {
         resize: none;
     }
+
+    .noPadding {
+        padding:0;
+    }
+
+    #matrixBlockSizeInput {
+        width: 50px;
+        margin: 5px 0px 10px 0px !important;
+    }
 </style>
 <div class="row">
     <div class="col-md-4">
@@ -31,7 +40,11 @@
         <input type="button" value="Encode" onclick="encode()" />
     </div>
     <div class="col-md-4">
-        <input type="button" onclick="generateKey()" class="col-md-offset-3 col-md-6" value="Generate key (100)" />
+        <input type="button" onclick="generateKey()" class="col-md-offset-3 col-md-6" value="Generate key" />
+        <div class="col-md-offset-3 col-md-6 noPadding">
+            <h4 class="pull-left">Block size:</h4>
+            <input id="matrixBlockSizeInput" type="number" name="BlockSize" min="2" max="10" value="5" class="text-center pull-right" />
+        </div>        
         <br />
         <br />
         <textarea id="keycontents" class="col-md-12" rows="4" cols="30"></textarea>

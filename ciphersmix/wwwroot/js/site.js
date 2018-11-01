@@ -5,18 +5,21 @@
     " ": 28
 };
 
-function makeid() {
-    var text = "";
-    var possible = Object.keys(dict).join('');
-
-    for (var i = 0; i < 100; i++)
+//generates id where its matrix determinant has GCD 1 (for that reason prime number is chosen as modulus base),
+//key matrix determinant != 0
+function makeid(keysize) {
+    let text = "";
+    let possible = Object.keys(dict).join('');
+    for (let i = 0; i < keysize; i++)
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
+    if (math.det(stringArrayToMatrix(chunkString(text, math.sqrt(keysize)))) === 0)
+        return makeid(keysize);
     return text;
 }
 
 function generateKey() {
-    $('#keycontents').val(makeid());
+    $('#keycontents').val(makeid(math.pow($('#matrixBlockSizeInput').val(), 2)));
 }
 
 //divides string into chunks/blocks
@@ -29,12 +32,12 @@ function chunkString(str, len) {
         _offset = _i * len;
         _ret[_i] = str.substring(_offset, _offset + len);
     }
-    _ret[_ret.length - 1] = _ret[_ret.length - 1].padEnd(10, " ");
+    _ret[_ret.length - 1] = _ret[_ret.length - 1].padEnd(len, " ");
 
     return _ret;
 }
 
-//creates matrix out of string chunks
+//creates matrix out of string chunks by mapping characters to corresponding number values
 function stringArrayToMatrix(chunkedStringArray) {
     var matrix = new Array(chunkedStringArray.length);
     for (var i = 0; i < chunkedStringArray.length; i++) {
@@ -48,14 +51,14 @@ function stringArrayToMatrix(chunkedStringArray) {
     return matrix;
 }
 
-//multiplies the matrix
+//encrypts the message by multiplying key matrix and message blocks
+//performs mod operation on results
 function encode() {
     var plaintext = $('#contentToEncode').val();
     var key = $('#keycontents').val();
 
-    var keyMatrix = stringArrayToMatrix(chunkString(key, 10));
-    console.log(keyMatrix);
-    var plainTextMatrix = stringArrayToMatrix(chunkString(plaintext, 10));
+    var keyMatrix = stringArrayToMatrix(chunkString(key, math.sqrt(key.length)));
+    var plainTextMatrix = stringArrayToMatrix(chunkString(plaintext, math.sqrt(key.length)));
 
     var cypherText = new Array(plainTextMatrix.length);
     var modulo = Object.keys(dict).length;
@@ -75,17 +78,17 @@ function encode() {
     $('#contentToDecode').val(cypherText.flat().join(''));
 }
 
+
 function decode() {
     var cypherText = $('#contentToDecode').val();
     var key = $('#keycontents').val();
 
-    //key matrix inverse with modulo
+    var cypherTextMatrix = stringArrayToMatrix(chunkString(cypherText, math.sqrt(key.length)));
 
-    //tu inverza neke nena prav zracuna wtf - ni navadni inverz ampak modulo inverz
-    var keyMatrixInverse = math.mod(math.inv(stringArrayToMatrix(chunkString(key, 10))), 29);
-    console.log(keyMatrixInverse);
-
-    var cypherTextMatrix = stringArrayToMatrix(chunkString(cypherText, 10));
+    //gets the inverse of key determinant mod base
+    console.log(math.mod(math.floor(math.det(stringArrayToMatrix(chunkString(key, math.sqrt(key.length))))), Object.keys(dict).length));
+    var keyDetModInverse = getGCD(math.mod(math.floor(math.det(stringArrayToMatrix(chunkString(key, math.sqrt(key.length))))), Object.keys(dict).length), Object.keys(dict).length);
+    console.log(keyDetModInverse);
 
     var plaintext = new Array(cypherTextMatrix.length);
     var modulo = Object.keys(dict).length;
@@ -103,6 +106,51 @@ function decode() {
         plaintext[i] = decodedBlock;
     }
     $('#contentToEncode').val(plaintext.flat().join(''));
+}
+
+//extended Euclid Algorithm
+//source: https://www.w3resource.com/javascript-exercises/javascript-math-exercise-47.php
+function Euclid_gcd(a, b) {
+    a = +a;
+    b = +b;
+    if (a !== a || b !== b) {
+        return [NaN, NaN, NaN];
+    }
+
+    if (a === Infinity || a === -Infinity || b === Infinity || b === -Infinity) {
+        return [Infinity, Infinity, Infinity];
+    }
+    // Checks if a or b are decimals
+    if ((a % 1 !== 0) || (b % 1 !== 0)) {
+        return false;
+    }
+    var signX = (a < 0) ? -1 : 1,
+        signY = (b < 0) ? -1 : 1,
+        x = 0,
+        y = 1,
+        u = 1,
+        v = 0,
+        q, r, m, n;
+    a = Math.abs(a);
+    b = Math.abs(b);
+
+    while (a !== 0) {
+        q = Math.floor(b / a);
+        r = b % a;
+        m = x - u * q;
+        n = y - v * q;
+        b = a;
+        a = r;
+        x = u;
+        y = v;
+        u = m;
+        v = n;
+    }
+    return [b, signX * x, signY * y];
+}
+
+function getGCD(a,b) {
+    return Euclid_gcd(a, b)[0];
 }
 
 //open file logic
