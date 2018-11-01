@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "Hill";
+}
+
+<h2 class="text-center">Hill cipher</h2>
+<br />
+<style type="text/css">
+    .filecontents {
+        border: double;
+        overflow-y: scroll;
+        height: 400px;
+        width: 100%;
+    }
+
+    #keycontents {
+        border: double;
+        overflow-y: scroll;
+        height: 70px;
+    }
+
+    textarea {
+        resize: none;
+    }
+</style>
+<div class="row">
+    <div class="col-md-4">
+        <h4 class="text-center">Encoding plaintext</h4>
+        <input type="file" id="fileToEncode" />
+        <br />
+        <input type="button" value="Encode" onclick="encode()" />
+    </div>
+    <div class="col-md-4">
+        <input type="button" onclick="generateKey()" class="col-md-offset-3 col-md-6" value="Generate key (100)" />
+        <br />
+        <br />
+        <textarea id="keycontents" class="col-md-12" rows="4" cols="30"></textarea>
+    </div>
+    <div class="col-md-4">
+        <h4 class="text-center">Decoding cipher</h4>
+        <input type="file" id="fileToDecode" />
+        <br />
+        <input type="button" value="Decode" onclick="decode()" />
+    </div>
+</div>
+
+<br />
+
+<div class="row">
+    <div class="col-md-6">
+        <div>Plaintext:</div>
+        <textarea id="contentToEncode" class="filecontents"></textarea>
+    </div>
+    <div class="col-md-6">
+        <div>Encoded text:</div>
+        <textarea id="contentToDecode" class="filecontents"></textarea>
+    </div>
+</div>
