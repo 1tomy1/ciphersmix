@@ -33,3 +33,29 @@
         display: none;
     }
 }
+
+.filecontents {
+    border: double;
+    overflow-y: scroll;
+    height: 400px;
+    width: 100%;
+}
+
+#keycontents {
+    border: double;
+    overflow-y: scroll;
+    height: 70px;
+}
+
+textarea {
+    resize: none;
+}
+
+.noPadding {
+    padding: 0;
+}
+
+#matrixBlockSizeInput {
+    width: 50px;
+    margin: 5px 0px 10px 0px !important;
+}
